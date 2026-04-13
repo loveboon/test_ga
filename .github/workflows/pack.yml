@@ -55,6 +55,7 @@ jobs:
   AdGuardHome:
     name: Build FuckAD_AdGuardHome_linux for ${{ matrix.arch }} package
     runs-on: ubuntu-latest
+    needs: module
     strategy:
       fail-fast: false
       matrix:
