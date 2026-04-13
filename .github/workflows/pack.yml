@@ -155,6 +155,8 @@ jobs:
         uses: actions/download-artifact@v8
         with:
           pattern: FuckAD_*
+          path: .
+          merge-multiple: false
           skip-decompress: true
 
       - name: Display structure of downloaded files
