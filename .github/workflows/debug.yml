@@ -1,10 +1,9 @@
-name: Release
+name: Debug
 
 on:
   workflow_dispatch:
   push:
-    tags:
-      - "v*"
+    branches: [ main ]
 
 permissions:
   contents: write
@@ -21,7 +20,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
         with:
-          fetch-depth: 0
+          fetch-depth: 1
 
       - name: Get version
         id: version
@@ -30,7 +29,8 @@ jobs:
           set -euo pipefail
           FILE="module/module.prop"
           version="$(grep '^version=' "$FILE" | cut -d'=' -f2)"
-          versionCode="$(grep '^versionCode=' "$FILE" | cut -d'=' -f2)"
+          versionCode="$(git rev-list --count HEAD)"
+          sed -i "/^versionCode=/c\versionCode=$versionCode" "$FILE"
           echo "version=$version" >> "$GITHUB_OUTPUT"
           echo "versionCode=$versionCode" >> "$GITHUB_OUTPUT"
 
@@ -38,17 +38,17 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          rm -f "FuckAD_module-v${{ steps.version.outputs.version }}-${{ steps.version.outputs.versionCode }}-release.zip"
+          rm -f "FuckAD_module-v${{ steps.version.outputs.version }}-${{ steps.version.outputs.versionCode }}-debug.zip"
           (
             cd module
-            zip -9r "../FuckAD_module-v${{ steps.version.outputs.version }}-${{ steps.version.outputs.versionCode }}-release.zip" .
+            zip -9r "../FuckAD_module-v${{ steps.version.outputs.version }}-${{ steps.version.outputs.versionCode }}-debug.zip" .
           )
 
       - name: Upload artifact
         uses: actions/upload-artifact@v7
         with:
-          name: FuckAD_module-v${{ steps.version.outputs.version }}-${{ steps.version.outputs.versionCode }}-release.zip
-          path: FuckAD_module-v${{ steps.version.outputs.version }}-${{ steps.version.outputs.versionCode }}-release.zip
+          name: FuckAD_module-v${{ steps.version.outputs.version }}-${{ steps.version.outputs.versionCode }}-debug.zip
+          path: FuckAD_module-v${{ steps.version.outputs.version }}-${{ steps.version.outputs.versionCode }}-debug.zip
           archive: false
           if-no-files-found: error
 
@@ -112,61 +112,16 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          rm -f "FuckAD_AdGuardHome_linux_${{ matrix.arch }}-v${{ needs.module.outputs.version }}-${{ needs.module.outputs.versionCode }}-release.zip"
+          rm -f "FuckAD_AdGuardHome_linux_${{ matrix.arch }}-v${{ needs.module.outputs.version }}-${{ needs.module.outputs.versionCode }}-debug.zip"
           (
             cd staging
-            zip -9r "../FuckAD_AdGuardHome_linux_${{ matrix.arch }}-v${{ needs.module.outputs.version }}-${{ needs.module.outputs.versionCode }}-release.zip" .
+            zip -9r "../FuckAD_AdGuardHome_linux_${{ matrix.arch }}-v${{ needs.module.outputs.version }}-${{ needs.module.outputs.versionCode }}-debug.zip" .
           )
 
       - name: Upload artifact
         uses: actions/upload-artifact@v7
         with:
-          name: FuckAD_AdGuardHome_linux_${{ matrix.arch }}-v${{ needs.module.outputs.version }}-${{ needs.module.outputs.versionCode }}-release.zip
-          path: FuckAD_AdGuardHome_linux_${{ matrix.arch }}-v${{ needs.module.outputs.version }}-${{ needs.module.outputs.versionCode }}-release.zip
+          name: FuckAD_AdGuardHome_linux_${{ matrix.arch }}-v${{ needs.module.outputs.version }}-${{ needs.module.outputs.versionCode }}-debug.zip
+          path: FuckAD_AdGuardHome_linux_${{ matrix.arch }}-v${{ needs.module.outputs.version }}-${{ needs.module.outputs.versionCode }}-debug.zip
           archive: false
           if-no-files-found: error
-
-  release:
-    name: Create GitHub Release
-    runs-on: ubuntu-latest
-    needs: [ module, AdGuardHome ]
-    if: startsWith(github.ref, 'refs/tags/')
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-
-      - name: Validate tag format
-        shell: bash
-        run: |
-          set -euo pipefail
-          if [[ ! "${GITHUB_REF_NAME}" =~ ^v[0-9]+(\.[0-9]+){1,2}$ ]]; then
-            echo "Tag must be x.x or x.x.x (optional v prefix), got: ${GITHUB_REF_NAME}" >&2
-            exit 1
-          fi
-
-      - name: Create cache folder
-        run: |
-          mkdir cache
-
-      - name: Download build artifacts
-        uses: actions/download-artifact@v8
-        with:
-          pattern: FuckAD_*
-          path: cache
-          merge-multiple: true
-          skip-decompress: true
-
-      - name: Display structure of downloaded files
-        run: ls -R
-
-      - name: Create release
-        uses: softprops/action-gh-release@v3
-        with:
-          tag_name: ${{ github.ref_name }}
-          name: ${{ github.ref_name }}
-          body_path: changelog.md
-          files: |
-            cache/FuckAD_*.zip
