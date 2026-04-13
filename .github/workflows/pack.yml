@@ -47,7 +47,7 @@ jobs:
         with:
           name: FuckAD_module
           path: FuckAD_module_${{ steps.version.outputs.version }}.zip
-          archive: false
+          archive: true
           if-no-files-found: error
 
   AdGuardHome:
@@ -62,7 +62,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
         with:
-          fetch-depth: 1
+          fetch-depth: 0
 
       - name: Get version
         id: version
@@ -132,7 +132,7 @@ jobs:
         with:
           name: FuckAD_AdGuardHome_linux_${{ matrix.arch }}
           path: FuckAD_AdGuardHome_linux_${{ matrix.arch }}_${{ steps.version.outputs.version }}.zip
-          archive: false
+          archive: true
           if-no-files-found: error
 
   release:
@@ -143,7 +143,9 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
 
       - name: Validate tag format
         shell: bash
@@ -158,7 +160,7 @@ jobs:
         uses: actions/download-artifact@v8
         with:
           pattern: FuckAD_*
-          merge-multiple: true
+          merge-multiple: false
 
       - name: Create release
         uses: softprops/action-gh-release@v2
