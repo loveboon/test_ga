@@ -10,8 +10,45 @@ permissions:
   contents: write
 
 jobs:
-  package:
-    name: Build FuckAD_AdGuardHome for ${{ matrix.arch }} package
+  module:
+    name: Build module package
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Get version
+        id: version
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "${GITHUB_REF_TYPE}" == "tag" ]]; then
+            VERSION="${GITHUB_REF_NAME}"
+          else
+            VERSION="$(git describe --tags --abbrev=0 2>/dev/null || echo dev)"
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Create module zip
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f "FuckAD_module_${{ steps.version.outputs.version }}.zip"
+          (
+            cd module
+            zip -r "../FuckAD_module_${{ steps.version.outputs.version }}.zip" .
+          )
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: FuckAD_module_${{ steps.version.outputs.version }}.zip
+          path: FuckAD_module_${{ steps.version.outputs.version }}.zip
+          if-no-files-found: error
+
+  AdGuardHome:
+    name: Build FuckAD_AdGuardHome_linux for ${{ matrix.arch }} package
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -79,23 +116,23 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          rm -f "FuckAD_AdGuardHome_${{ matrix.arch }}_${{ steps.version.outputs.version }}.zip"
+          rm -f "FuckAD_AdGuardHome_linux_${{ matrix.arch }}_${{ steps.version.outputs.version }}.zip"
           (
             cd staging
-            zip -r "../FuckAD_AdGuardHome_${{ matrix.arch }}_${{ steps.version.outputs.version }}.zip" .
+            zip -r "../FuckAD_AdGuardHome_linux_${{ matrix.arch }}_${{ steps.version.outputs.version }}.zip" .
           )
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: FuckAD_AdGuardHome_${{ matrix.arch }}_${{ steps.version.outputs.version }}.zip
-          path: FuckAD_AdGuardHome_${{ matrix.arch }}_${{ steps.version.outputs.version }}.zip
+          name: FuckAD_AdGuardHome_linux_${{ matrix.arch }}_${{ steps.version.outputs.version }}.zip
+          path: FuckAD_AdGuardHome_linux_${{ matrix.arch }}_${{ steps.version.outputs.version }}.zip
           if-no-files-found: error
 
   release:
     name: Create GitHub Release
     runs-on: ubuntu-latest
-    needs: package
+    needs: [ module, AdGuardHome ]
     if: startsWith(github.ref, 'refs/tags/')
 
     steps:
@@ -114,7 +151,7 @@ jobs:
       - name: Download build artifacts
         uses: actions/download-artifact@v4
         with:
-          pattern: FuckAD_AdGuardHome_*
+          pattern: FuckAD_*
           merge-multiple: true
 
       - name: Create release
@@ -124,5 +161,6 @@ jobs:
           name: ${{ github.ref_name }}
           body_path: changelog.md
           files: |
-            FuckAD_AdGuardHome_arm64_${{ github.ref_name }}.zip
-            FuckAD_AdGuardHome_armv7_${{ github.ref_name }}.zip
+            FuckAD_module_${{ github.ref_name }}.zip
+            FuckAD_AdGuardHome_linux_arm64_${{ github.ref_name }}.zip
+            FuckAD_AdGuardHome_linux_armv7_${{ github.ref_name }}.zip
