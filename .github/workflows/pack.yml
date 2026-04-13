@@ -47,7 +47,7 @@ jobs:
         with:
           name: FuckAD_module
           path: FuckAD_module_${{ steps.version.outputs.version }}.zip
-          archive: true
+          archive: false
           if-no-files-found: error
 
   AdGuardHome:
@@ -156,11 +156,16 @@ jobs:
             exit 1
           fi
 
+      - name: Create cache folder
+        run: |
+          mkdir cache
+
       - name: Download build artifacts
         uses: actions/download-artifact@v8
         with:
           pattern: FuckAD_*
-          merge-multiple: true
+          path: cache
+          merge-multiple: false
 
       - name: Display structure of downloaded files
         run: ls -R
@@ -172,4 +177,4 @@ jobs:
           name: ${{ github.ref_name }}
           body_path: changelog.md
           files: |
-            *.zip
+            cache/*.zip
