@@ -16,7 +16,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Get version
         id: version
@@ -41,7 +41,7 @@ jobs:
           )
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: FuckAD_module_${{ steps.version.outputs.version }}
           path: FuckAD_module_${{ steps.version.outputs.version }}.zip
@@ -57,7 +57,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Get version
         id: version
@@ -123,7 +123,7 @@ jobs:
           )
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: FuckAD_AdGuardHome_linux_${{ matrix.arch }}_${{ steps.version.outputs.version }}
           path: FuckAD_AdGuardHome_linux_${{ matrix.arch }}_${{ steps.version.outputs.version }}.zip
@@ -137,7 +137,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Validate tag format
         shell: bash
