@@ -16,7 +16,9 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
 
       - name: Get version
         id: version
@@ -41,9 +43,9 @@ jobs:
           )
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v7.0.0
+        uses: actions/upload-artifact@v7
         with:
-          name: FuckAD_module_${{ steps.version.outputs.version }}
+          name: FuckAD_module
           path: FuckAD_module_${{ steps.version.outputs.version }}.zip
           archive: false
           if-no-files-found: error
@@ -58,7 +60,9 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
 
       - name: Get version
         id: version
@@ -124,9 +128,9 @@ jobs:
           )
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v7.0.0
+        uses: actions/upload-artifact@v7
         with:
-          name: FuckAD_AdGuardHome_linux_${{ matrix.arch }}_${{ steps.version.outputs.version }}
+          name: FuckAD_AdGuardHome_linux_${{ matrix.arch }}
           path: FuckAD_AdGuardHome_linux_${{ matrix.arch }}_${{ steps.version.outputs.version }}.zip
           archive: false
           if-no-files-found: error
@@ -151,7 +155,7 @@ jobs:
           fi
 
       - name: Download build artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v8
         with:
           pattern: FuckAD_*
           merge-multiple: true
@@ -163,6 +167,6 @@ jobs:
           name: ${{ github.ref_name }}
           body_path: changelog.md
           files: |
-            FuckAD_module_${{ github.ref_name }}.zip
-            FuckAD_AdGuardHome_linux_arm64_${{ github.ref_name }}.zip
-            FuckAD_AdGuardHome_linux_armv7_${{ github.ref_name }}.zip
+            FuckAD_module/*.zip
+            FuckAD_AdGuardHome_linux_arm64/*.zip
+            FuckAD_AdGuardHome_linux_armv7/*.zip
