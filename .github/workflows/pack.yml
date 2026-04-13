@@ -142,6 +142,11 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/')
 
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
       - name: Validate tag format
         shell: bash
         run: |
@@ -151,11 +156,15 @@ jobs:
             exit 1
           fi
 
+      - name: Create cache folder
+        run: |
+          mkdir cache
+
       - name: Download build artifacts
         uses: actions/download-artifact@v8
         with:
           pattern: FuckAD_*
-          path: .
+          path: cache
           merge-multiple: true
           skip-decompress: true
 
@@ -169,4 +178,4 @@ jobs:
           name: ${{ github.ref_name }}
           body_path: changelog.md
           files: |
-            FuckAD_*.zip
+            cache/FuckAD_*.zip
