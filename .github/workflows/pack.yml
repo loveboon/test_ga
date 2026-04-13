@@ -132,7 +132,7 @@ jobs:
         with:
           name: FuckAD_AdGuardHome_linux_${{ matrix.arch }}
           path: FuckAD_AdGuardHome_linux_${{ matrix.arch }}_${{ steps.version.outputs.version }}.zip
-          archive: true
+          archive: false
           if-no-files-found: error
 
   release:
@@ -160,7 +160,7 @@ jobs:
         uses: actions/download-artifact@v8
         with:
           pattern: FuckAD_*
-          merge-multiple: false
+          merge-multiple: true
 
       - name: Create release
         uses: softprops/action-gh-release@v2
@@ -169,6 +169,4 @@ jobs:
           name: ${{ github.ref_name }}
           body_path: changelog.md
           files: |
-            FuckAD_module/*.zip
-            FuckAD_AdGuardHome_linux_arm64/*.zip
-            FuckAD_AdGuardHome_linux_armv7/*.zip
+            *.zip
