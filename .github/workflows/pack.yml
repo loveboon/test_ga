@@ -142,11 +142,6 @@ jobs:
     if: startsWith(github.ref, 'refs/tags/')
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-
       - name: Validate tag format
         shell: bash
         run: |
@@ -156,25 +151,20 @@ jobs:
             exit 1
           fi
 
-      - name: Create cache folder
-        run: |
-          mkdir cache
-
       - name: Download build artifacts
         uses: actions/download-artifact@v8
         with:
           pattern: FuckAD_*
-          path: cache
-          merge-multiple: false
+          skip-decompress: true
 
       - name: Display structure of downloaded files
         run: ls -R
 
       - name: Create release
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ github.ref_name }}
           name: ${{ github.ref_name }}
           body_path: changelog.md
           files: |
-            cache/*.zip
+            FuckAD_*.zip
