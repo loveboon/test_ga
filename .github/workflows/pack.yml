@@ -41,7 +41,7 @@ jobs:
           rm -f "FuckAD_module-v${{ steps.version.outputs.version }}-${{ steps.version.outputs.versionCode }}-release.zip"
           (
             cd module
-            zip -r "../FuckAD_module-v${{ steps.version.outputs.version }}-${{ steps.version.outputs.versionCode }}-release.zip" .
+            zip -9r "../FuckAD_module-v${{ steps.version.outputs.version }}-${{ steps.version.outputs.versionCode }}-release.zip" .
           )
 
       - name: Upload artifact
@@ -115,7 +115,7 @@ jobs:
           rm -f "FuckAD_AdGuardHome_linux_${{ matrix.arch }}-v${{ needs.module.outputs.version }}-${{ needs.module.outputs.versionCode }}-release.zip"
           (
             cd staging
-            zip -r "../FuckAD_AdGuardHome_linux_${{ matrix.arch }}-v${{ needs.module.outputs.version }}-${{ needs.module.outputs.versionCode }}-release.zip" .
+            zip -9r "../FuckAD_AdGuardHome_linux_${{ matrix.arch }}-v${{ needs.module.outputs.version }}-${{ needs.module.outputs.versionCode }}-release.zip" .
           )
 
       - name: Upload artifact
