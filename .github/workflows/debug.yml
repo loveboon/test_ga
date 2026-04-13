@@ -3,7 +3,7 @@ name: Debug
 on:
   workflow_dispatch:
   push:
-    branches: [ main ]
+    branches: [ master ]
 
 permissions:
   contents: write
