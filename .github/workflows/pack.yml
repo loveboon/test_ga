@@ -43,7 +43,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: FuckAD_module_${{ steps.version.outputs.version }}.zip
+          name: FuckAD_module_${{ steps.version.outputs.version }}
           path: FuckAD_module_${{ steps.version.outputs.version }}.zip
           if-no-files-found: error
 
@@ -125,7 +125,7 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: FuckAD_AdGuardHome_linux_${{ matrix.arch }}_${{ steps.version.outputs.version }}.zip
+          name: FuckAD_AdGuardHome_linux_${{ matrix.arch }}_${{ steps.version.outputs.version }}
           path: FuckAD_AdGuardHome_linux_${{ matrix.arch }}_${{ steps.version.outputs.version }}.zip
           if-no-files-found: error
 
