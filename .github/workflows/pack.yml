@@ -1,4 +1,4 @@
-name: Pack AdGuardHomeForRoot
+name: Pack FuckAD
 
 on:
   workflow_dispatch:
@@ -11,7 +11,7 @@ permissions:
 
 jobs:
   package:
-    name: Build ${{ matrix.arch }} package
+    name: Build FuckAD_AdGuardHome for ${{ matrix.arch }} package
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -60,24 +60,24 @@ jobs:
           set -euo pipefail
           rm -rf staging
           mkdir -p staging
-          cp -a src/. staging/
-          cp "cache/${{ matrix.arch }}/AdGuardHome/AdGuardHome" "staging/bin/AdGuardHome"
+          cp -a AdGuardHome staging/
+          cp "cache/${{ matrix.arch }}/AdGuardHome/AdGuardHome" "staging/AdGuardHome/bin/AdGuardHome"
 
       - name: Create zip package
         shell: bash
         run: |
           set -euo pipefail
-          rm -f "AdGuardHomeForRoot_${{ matrix.arch }}.zip"
+          rm -f "FuckAD_AdGuardHome_${{ matrix.arch }}.zip"
           (
             cd staging
-            zip -r "../AdGuardHomeForRoot_${{ matrix.arch }}.zip" .
+            zip -r "../FuckAD_AdGuardHome_${{ matrix.arch }}.zip" .
           )
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: AdGuardHomeForRoot_${{ matrix.arch }}
-          path: AdGuardHomeForRoot_${{ matrix.arch }}.zip
+          name: FuckAD_AdGuardHome_${{ matrix.arch }}
+          path: FuckAD_AdGuardHome_${{ matrix.arch }}.zip
           if-no-files-found: error
 
   release:
@@ -102,7 +102,7 @@ jobs:
       - name: Download build artifacts
         uses: actions/download-artifact@v4
         with:
-          pattern: AdGuardHomeForRoot_*
+          pattern: FuckAD_AdGuardHome_*
           merge-multiple: true
 
       - name: Create release
@@ -112,5 +112,5 @@ jobs:
           name: ${{ github.ref_name }}
           body_path: changelog.md
           files: |
-            AdGuardHomeForRoot_arm64.zip
-            AdGuardHomeForRoot_armv7.zip
+            FuckAD_AdGuardHome_arm64.zip
+            FuckAD_AdGuardHome_armv7.zip
