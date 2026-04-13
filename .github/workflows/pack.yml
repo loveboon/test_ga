@@ -41,10 +41,11 @@ jobs:
           )
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7.0.0
         with:
           name: FuckAD_module_${{ steps.version.outputs.version }}
           path: FuckAD_module_${{ steps.version.outputs.version }}.zip
+          archive: false
           if-no-files-found: error
 
   AdGuardHome:
@@ -123,10 +124,11 @@ jobs:
           )
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v7.0.0
         with:
           name: FuckAD_AdGuardHome_linux_${{ matrix.arch }}_${{ steps.version.outputs.version }}
           path: FuckAD_AdGuardHome_linux_${{ matrix.arch }}_${{ steps.version.outputs.version }}.zip
+          archive: false
           if-no-files-found: error
 
   release:
