@@ -3,7 +3,15 @@ name: Debug
 on:
   workflow_dispatch:
   push:
-    branches: [ master ]
+    branches:
+      - 'master'
+    paths-ignore:
+      - '.gitattributes'
+      - '.gitignore'
+      - 'LICENSE'
+      - '.github/workflows/releases.yml'
+      - 'docs/*'
+      - '*.md'
 
 permissions:
   contents: write
